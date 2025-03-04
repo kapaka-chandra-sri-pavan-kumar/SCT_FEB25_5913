@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe Game</title>
+    <style>
+        /* Basic Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        /* Container for the game */
+        .game-container {
+            width: 90%;
+            max-width: 400px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+            border: 5px solid #444;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Each cell in the grid */
+        .cell {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f1f1f1;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            border: 2px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .cell:hover {
+            background-color: #ddd;
+            transform: scale(1.05);
+        }
+
+        .cell.X {
+            color: #ff6347;
+        }
+
+        .cell.O {
+            color: #1e90ff;
+        }
+
+        /* Reset button */
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Display messages */
+        .message {
+            font-size: 1.2rem;
+            color: #333;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .game-container {
+                grid-template-columns: repeat(3, 1fr);
+                padding: 5px;
+            }
+
+            .cell {
+                height: 80px;
+                font-size: 1.5rem;
+            }
+
+            .reset-btn {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="gameBoard">
+        <!-- Game cells will be inserted dynamically -->
+    </div>
+
+    <div class="message" id="message">Player X's turn</div>
+    <button class="reset-btn" id="resetBtn" onclick="resetGame()">Reset Game</button>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+
+        const gameBoard = document.getElementById('gameBoard');
+        const message = document.getElementById('message');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Create the game board
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            board.forEach((cell, index) => {
+                const cellElement = document.createElement('div');
+                cellElement.classList.add('cell');
+                cellElement.dataset.index = index;
+                cellElement.textContent = cell;
+                cellElement.addEventListener('click', handleCellClick);
+                gameBoard.appendChild(cellElement);
+            });
+        }
+
+        // Handle cell click
+        function handleCellClick(event) {
+            const index = event.target.dataset.index;
+            if (board[index] || !gameActive) return; // Ignore if cell already filled or game is over
+            board[index] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            event.target.classList.add(currentPlayer);
+
+            if (checkWinner()) {
+                message.textContent = `Player ${currentPlayer} wins!`;
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            message.textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        // Check if there's a winner
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6] // diagonals
+            ];
+
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return board[a] && board[a] === board[b] && board[a] === board[c];
+            });
+        }
+
+        // Reset the game
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            message.textContent = `Player X's turn`;
+            createBoard();
+        }
+
+        // Initialize the game
+        createBoard();
+    </script>
+
+</body>
+</html>
